@@ -3,6 +3,66 @@ import matplotlib.pyplot as plt
 from scipy import sparse
 from alignmenttools import dist_euclidean, downsample_trajectory
 
+def delannoy(M, N):
+    """
+    Compute the Delannoy number D(M, N) using dynamic programming
+    
+    Parameters
+    ----------
+    M: int
+        Number of samples in the first time series
+    N: int
+        Number of samples in the second time series
+    
+    Returns
+    -------
+    int: D(M, N)
+    """
+    D = np.ones((M, N), dtype=int)
+    for i in range(1, M):
+        for j in range(1, N):
+            D[i, j] = D[i-1, j] + D[i, j-1] + D[i-1, j-1]
+    return D[-1, -1]
+
+def plot_all_warppaths(M, N, path = [[0, 0]], params = {"num":1}):
+    """
+    Make plots of all warping paths between two time series of
+    specified lengths
+
+    Parameters
+    ----------
+    M: int
+        Number of samples in the first time series
+    N: int
+        Number of samples in the second time series
+    path: list of [i, j]
+        Recursively constructed warping path from one time
+        series to the next
+    params: dict
+        Used for keeping track of which warping path we're on
+        and how many warping paths total there are
+    """
+    if not "D" in params:
+        params["D"] = delannoy(M, N)
+    p = path[-1] # Pull out the last pair in the warping path
+    if p[0] == M-1 and p[1] == N-1:
+        # Stopping condition: This warping path has reached the end
+        plt.clf()
+        plt.title("{} x {} Warping Path {} of {}".format(M, N, params["num"], params["D"]))
+        path = np.array(path)
+        plt.plot(path[:, 1], path[:, 0])
+        plt.scatter(path[:, 1], path[:, 0], color='k', zorder=10)
+        plt.xticks(np.arange(N), ["%i"%i for i in range(N)])
+        plt.yticks(np.arange(M), ["%i"%i for i in range(M)])
+        plt.gca().invert_yaxis()
+        plt.ylabel("First Time Series")
+        plt.xlabel("Second Time Series")
+        plt.savefig("Path{}.png".format(params["num"]), bbox_inches='tight')
+        params["num"] += 1
+    else:
+        ## TODO: Fill this in
+        pass
+
 def dtw(X, Y):
     """
     Perform dynamic time warping between two
