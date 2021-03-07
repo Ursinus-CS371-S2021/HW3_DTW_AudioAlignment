@@ -169,18 +169,36 @@ def fastdtw(X, Y, radius, level = 0, do_plot=False):
     """
     M = X.shape[0]
     N = Y.shape[0]
-    S = sparse.lil_matrix((M, N)) # Matrix for storing the cumulative cost
-    
-    ## TODO: Fill this in
+    path = [[0, 0]]
+    if M < radius or N < radius:
+        # Stopping condition: Perform ordinary DTW if 
+        # the problems are small enough
+        path = dtw(X, Y)
+    else:
+        # Matrix for storing the cumulative cost
+        S = sparse.lil_matrix((M, N)) 
+        # Matrix for storing the optimal choices
+        choices = sparse.lil_matrix((M, N), dtype=int) 
+        # Downsample the paths by a factor of 2
+        XDown = downsample_trajectory(X, fac=2)
+        YDown = downsample_trajectory(Y, fac=2)
+        
 
-    path = [[0, 0]] ## TODO: This is a dummy value
-    
-    if do_plot: # pragma: no cover
-        plt.figure(figsize=(8, 8))
-        plt.imshow(S.toarray())
-        P = np.array(path)
-        plt.scatter(P[:, 1], P[:, 0], c='C1')
-        plt.title("Level {}".format(level))
-        plt.savefig("%i.png"%level, bbox_inches='tight')
+        ## TODO: Fill this in.  Make a recursive call to fastdtw
+        ## to get a warping path from XDown to YDown.  
+        ## Then, use this path to create a mask Occ using create_mask, 
+        ## extract the indices from this mask, and construct S and choices
+        ## by looping through the indices in the mask
+        ## Finally, backtrace through choices to extract the 
+        ## optimal warping path
+
+        
+        if do_plot:
+            plt.figure(figsize=(8, 8))
+            plt.imshow(S.toarray())
+            P = np.array(path)
+            plt.scatter(P[:, 1], P[:, 0], c='C1')
+            plt.title("Level {}".format(level))
+            plt.savefig("%i.png"%level, bbox_inches='tight')
 
     return path
