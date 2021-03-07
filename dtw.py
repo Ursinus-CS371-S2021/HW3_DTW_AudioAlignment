@@ -60,7 +60,10 @@ def plot_all_warppaths(M, N, path = [[0, 0]], params = {"num":1}):
         plt.savefig("Path{}.png".format(params["num"]), bbox_inches='tight')
         params["num"] += 1
     else:
-        ## TODO: Fill this in
+        ## TODO: Fill this in.  Make recursive calls to plot_all_warppahts
+        ## to explore different warping paths, stepping by [0, 1], [1, 0], 
+        ## and [1, 1].  Be careful not to overstep beyond your boundaries,
+        ## or you may end up in infinite recursion
         pass
 
 def dtw(X, Y):
