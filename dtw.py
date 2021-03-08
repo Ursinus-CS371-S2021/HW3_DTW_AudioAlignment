@@ -143,21 +143,21 @@ def get_mask_indices_inorder(Occ):
     return ret.tolist()
 
 
-def fastdtw(X, Y, radius, level = 0, do_plot=False):
+def fastdtw(XL, YL, radius, L = 0, do_plot=False):
     """
     An implementation of [1]
     [1] FastDTW: Toward Accurate Dynamic Time Warping in Linear Time and Space. Stan Salvador and Philip Chan
     
     Parameters
     ----------
-    X: ndarray(M, d)
-        An Mxd array of coordinates for the first path
-    Y: ndarray(N, d)
-        An Nxd array of coordinates for the second path
+    XL: ndarray(floor(M/2^L), d)
+        An array of coordinates for the first path
+    YL: ndarray(floor(N/2^L), d)
+        An array of coordinates for the second path
     radius: int
         Radius of the l-infinity box that determines sparsity structure
         at each level
-    level: int
+    L: int
         An int for keeping track of the level of recursion
     do_plot: boolean
         Whether to plot the warping path at each level and save to image files
@@ -167,38 +167,50 @@ def fastdtw(X, Y, radius, level = 0, do_plot=False):
     path: list of [i, j]
         The warping path to align X and Y at this level
     """
-    M = X.shape[0]
-    N = Y.shape[0]
+    M = XL.shape[0]
+    N = YL.shape[0]
     path = [[0, 0]]
     if M < radius or N < radius:
         # Stopping condition: Perform ordinary DTW if 
         # the problems are small enough
-        path = dtw(X, Y)
+        path = dtw(XL, YL)
     else:
         # Matrix for storing the cumulative cost
         S = sparse.lil_matrix((M, N)) 
         # Matrix for storing the optimal choices
         choices = sparse.lil_matrix((M, N), dtype=int) 
-        # Downsample the paths by a factor of 2
-        XDown = downsample_trajectory(X, fac=2)
-        YDown = downsample_trajectory(Y, fac=2)
+        # Downsample the paths by a factor of 2 to go to level L+1
+        XLPlus1 = downsample_trajectory(XL, fac=2)
+        YLPlus1 = downsample_trajectory(YL, fac=2)
         
 
-        ## TODO: Fill this in.  Make a recursive call to fastdtw
-        ## to get a warping path from XDown to YDown.  
-        ## Then, use this path to create a mask Occ using create_mask, 
-        ## extract the indices from this mask, and construct S and choices
-        ## by looping through the indices in the mask
-        ## Finally, backtrace through choices to extract the 
-        ## optimal warping path
+        ## TODO: Fill this in.  
+        ## Step 1: Make a recursive call to fastdtw to get a warping path
+        ## from X_{L+1} to Y_{L+1}
 
+
+        ## Step 2: Use this path to create a mask Occ using create_mask, 
+        ## and extract the indices from this mask in the order they should
+        ## be visited by calling get_mask_indices_inorder
+
+
+        ## Step 3: Loop through all of the indices in the mask and compute
+        ## the dynamic programming matrix S, as well as the choices matrix.
+        ## Be very careful that if you're looking at a neighbor of S[i, j]
+        ## which is not actually a 1 in the occupancy matrix, *it is assumed
+        ## to be infinity*, not 0.  So a neighbor should never show up as
+        ## a choice if it is not a 1 in Occ
+
+
+        ## Step 4: Backtrace through choices to extract the optimal warping path
+        ## and store this in the "path" list
         
         if do_plot:
             plt.figure(figsize=(8, 8))
             plt.imshow(S.toarray())
             P = np.array(path)
             plt.scatter(P[:, 1], P[:, 0], c='C1')
-            plt.title("Level {}".format(level))
-            plt.savefig("%i.png"%level, bbox_inches='tight')
+            plt.title("Level {}".format(L))
+            plt.savefig("%i.png"%L, bbox_inches='tight')
 
     return path
