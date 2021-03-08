@@ -119,10 +119,9 @@ def stretch_audio(x1, x2, sr, path, hop_length):
     """
     from alignmenttools import refine_warping_path
     print("Stretching...")
-    path_final = path*hop_length
-    path_final = [(row[0], row[1]) for row in path_final if row[0] < x1.size and row[1] < x2.size]
+    path_final = [(row[0], row[1]) for row in path if row[0] < x1.size and row[1] < x2.size]
     path_final.append((x1.size, x2.size))
-    path_final = np.array(path_final, dtype=int)
+    path_final = hop_length*np.array(path_final, dtype=int)
     x3 = np.zeros((x2.size, 2))
     x3[:, 1] = x2
     x1_stretch = timemap_stretch(x1, sr, path_final)
