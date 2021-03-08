@@ -60,7 +60,7 @@ def plot_all_warppaths(M, N, path = [[0, 0]], params = {"num":1}):
         plt.savefig("Path{}.png".format(params["num"]), bbox_inches='tight')
         params["num"] += 1
     else:
-        ## TODO: Fill this in.  Make recursive calls to plot_all_warppahts
+        ## TODO: Fill this in.  Make recursive calls to plot_all_warppaths
         ## to explore different warping paths, stepping by [0, 1], [1, 0], 
         ## and [1, 1].  Be careful not to overstep beyond your boundaries,
         ## or you may end up in infinite recursion
@@ -115,7 +115,8 @@ def create_mask(M, N, path, radius):
     """
     Occ = sparse.lil_matrix((M, N))
     ## TODO: Fill this in; loop through all of the elements
-    ## in the path and place a box around each one
+    ## [i, j] in the path and place a box around [2*i, 2*j]
+    ## of all 1s in Occ
     return Occ
 
 def get_mask_indices_inorder(Occ):
@@ -189,9 +190,9 @@ def fastdtw(XL, YL, radius, L = 0, do_plot=False):
         ## from X_{L+1} to Y_{L+1}
 
 
-        ## Step 2: Use this path to create a mask Occ using create_mask, 
-        ## and extract the indices from this mask in the order they should
-        ## be visited by calling get_mask_indices_inorder
+        ## Step 2: Use this path to create a mask Occ using he create_mask, 
+        ## method, and extract the indices from this mask in the order they
+        ## should be visited by calling the get_mask_indices_inorder method
 
 
         ## Step 3: Loop through all of the indices in the mask and compute
