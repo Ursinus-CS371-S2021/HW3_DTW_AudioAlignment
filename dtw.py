@@ -190,7 +190,7 @@ def fastdtw(XL, YL, radius, L = 0, do_plot=False):
         ## from X_{L+1} to Y_{L+1}
 
 
-        ## Step 2: Use this path to create a mask Occ using he create_mask, 
+        ## Step 2: Use this path to create a mask Occ using the create_mask
         ## method, and extract the indices from this mask in the order they
         ## should be visited by calling the get_mask_indices_inorder method
 
