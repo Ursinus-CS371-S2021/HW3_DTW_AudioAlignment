@@ -197,10 +197,8 @@ def fastdtw(XL, YL, radius, L = 0, do_plot=False):
 
         ## Step 3: Loop through all of the indices in the mask and compute
         ## the dynamic programming matrix S, as well as the choices matrix.
-        ## Be very careful that if you're looking at a neighbor of S[i, j]
-        ## which is not actually a 1 in the occupancy matrix, *it is assumed
-        ## to be infinity*, not 0.  So a neighbor should never show up as
-        ## a choice if it is not a 1 in Occ
+        ## Be very careful that you only consider a neighbor of S[i, j] if
+        ## Occ[i, j]
 
 
         ## Step 4: Backtrace through choices to extract the optimal warping path
